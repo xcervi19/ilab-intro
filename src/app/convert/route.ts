@@ -20,7 +20,13 @@ export async function POST(request: Request) {
       const rate = await fetchExchangeRate(fromCurrency, toCurrency);
       const convertedAmount = rate * quantity;
 
-      return `${quantity} ${fromCurrency} -> ${toCurrency} ${convertedAmount.toFixed(2)}`;
+      if (rate === null) {
+        return `Service unavailable for converting ${fromCurrency} to ${toCurrency}`;
+      }
+
+      return `${quantity} ${fromCurrency} -> ${toCurrency} ${convertedAmount.toFixed(
+        2
+      )}`;
     })
   );
 

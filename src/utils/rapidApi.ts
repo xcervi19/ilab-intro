@@ -19,7 +19,7 @@ export async function fetchCurrencyData() {
     } else {
       console.error('Unexpected error:', error);
     }
-    return []
+    return null;
   }
 }
 
@@ -42,6 +42,6 @@ export async function fetchExchangeRate(fromCurrency: string, toCurrency: string
     const response = await axios.request(optionsRate);
     return response.data;
   } catch (error) {
-    // Error handling
+    return null;
   }
 }

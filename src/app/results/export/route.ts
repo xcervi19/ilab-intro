@@ -1,28 +1,49 @@
 import { fetchCurrencyData, fetchExchangeRate } from "@/utils/rapidApi";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const targetCurrency = searchParams.get("currency") || "CZK";
-  const currencies = await fetchCurrencyData();
+  try {
+    const { searchParams } = new URL(request.url);
+    const targetCurrency = searchParams.get("currency") || "CZK";
+    const currencies = await fetchCurrencyData();
 
-  let results = await Promise.all(
-    currencies.map(async (currency: string) => {
-      const rate = await fetchExchangeRate(currency, targetCurrency);
-      return { currency, rate };
-    })
-  );
+    if (currencies.length === 0) {
+      throw new Error("No currencies available.");
+    }
 
-  results = results.sort((a, b) => b.rate - a.rate);
+    let results = await Promise.all(
+      currencies.map(async (currency: string) => {
+        const rate = await fetchExchangeRate(currency, targetCurrency);
+        return rate !== null ? { currency, rate } : null;
+      })
+    );
 
-  const resultsString = results.map((item, index) =>
-    `${index + 1}. 1 ${item.currency} -> ${item.rate.toFixed(2)} ${targetCurrency}`
-  ).join(",\n");
+    results = results
+      .filter((item) => item !== null)
+      .sort((a, b) => b.rate - a.rate);
 
-  const finalString = resultsString.replace(/,([^,]*)$/, '$1');
+    const resultsString = results
+      .map(
+        (item, index) =>
+          `${index + 1}. 1 ${item.currency} -> ${item.rate.toFixed(
+            2
+          )} ${targetCurrency}`
+      )
+      .join(",\n");
 
-  const headers = new Headers();
-  headers.set('Content-Type', 'text/plain');
-  headers.set('Content-Disposition', 'attachment; filename="exchange-rates.txt"');
+    const finalString = resultsString.replace(/,([^,]*)$/, "$1");
 
-  return new Response(finalString, { headers });
+    const headers = new Headers();
+    headers.set("Content-Type", "text/plain");
+    headers.set(
+      "Content-Disposition",
+      'attachment; filename="exchange-rates.txt"'
+    );
+
+    return new Response(finalString, { headers });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
