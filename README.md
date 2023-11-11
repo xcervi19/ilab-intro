@@ -13,6 +13,8 @@ pnpm dev
 # or
 bun dev
 ```
+Also setup ENV -> RAPIDAPI_KEY
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
