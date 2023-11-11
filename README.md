@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+
+## Getting Started
+TODO: 
+- Set up Jest unit test: 
+https://github.com/vercel/next.js/tree/canary/examples/with-jest
+
+- Remove duplicated code and add it to utils
+- optimaze cache of the 
+- /listquotes
+
 ## Getting Started
 
 First, run the development server:
